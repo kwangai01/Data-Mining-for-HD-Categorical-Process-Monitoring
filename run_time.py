@@ -8,9 +8,6 @@ import pandas as pd
 from scipy.stats import multivariate_normal, norm
 from mlxtend.preprocessing import TransactionEncoder
 from mlxtend.frequent_patterns import apriori
-import statsmodels.nonparametric.kernel_regression as smnkr
-import matplotlib.pyplot as plt
-import seaborn as sns
 import time
 
 
@@ -131,44 +128,6 @@ def fim(X_set, sup_level):
     return FI, FS, FL, FI_num
 
 
-
-#plot
-def smoother(y, bw):
-    x = np.arange(len(y))
-    kr = smnkr.KernelReg(y, x, var_type='c', bw=[bw])
-    return kr.fit()[0]
-
-def time_plot(Grid, Time, Method, Color, Mark, Xlim, Ylim, bw, xlabel, path, fname):
-    sns.set() 
-    fig, ax1 = plt.subplots(1, 1, figsize=(20,12))
-    
-    method_idx = 1
-    y = smoother(Time[method_idx,:], [bw])
-    ax1.plot(Grid, y, Mark[method_idx]+'-', color=Color[method_idx], 
-             linewidth=4, markersize=15, label=Method[method_idx]) 
-    ax1.tick_params(axis='both', labelsize=36, color=Color[method_idx])
-    ax1.set_ylim(Ylim[method_idx,:])
-    ax1.set_xlim(Xlim)
-    ax1.set_xlabel(xlabel, fontsize=44, labelpad=2)
-    ax1.set_ylabel(Method[method_idx], fontsize=40, labelpad=3, color=Color[method_idx])
-    
-    method_idx = 0
-    ax2 = ax1.twinx()
-    y = smoother(Time[method_idx,:], [bw])
-    ax2.plot(Grid, y, Mark[method_idx]+'-', color=Color[method_idx], 
-             linewidth=4, markersize=15, label=Method[method_idx])
-    ax2.tick_params(axis='y', labelsize=36, labelcolor=Color[method_idx])
-    ax2.set_ylim(Ylim[method_idx,:])
-    ax2.set_ylabel(Method[method_idx], fontsize=40, labelpad=2, color=Color[method_idx]) 
-    
-    ax1.legend(fontsize=34, loc='upper left')
-    ax2.legend(fontsize=34, loc='lower right')
-    
-    plt.subplots_adjust(left=0.10, right=0.90, bottom=0.10, top=0.95)
-    plt.savefig(path+fname+'.png', dpi=280)
-    plt.close(fig)
-
-
 #setup
 d = 5
 rho = 0.5
@@ -276,3 +235,5 @@ for p_idx in np.arange(len(P_set)):
             FI, FS, FL, FI_num = fim(X_set, sup_level)
             stop_time = time.time()
             Time[1, p_idx, n_idx, rep] = stop_time-start_time
+
+
